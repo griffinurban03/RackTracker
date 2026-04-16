@@ -115,10 +115,10 @@ export default function App() {
                 <View style={modalStyles.container}>
                     <Text style={modalStyles.header}>Add New Gear</Text>
 
-                    <TextInput style={modalStyles.input} placeholder="Brand (e.g. Petzl)" value={brand} onChangeText={setBrand} />
-                    <TextInput style={modalStyles.input} placeholder="Model (e.g. Grigri)" value={model} onChangeText={setModel} />
-                    <TextInput style={modalStyles.input} placeholder="Category (e.g. Belay Device)" value={category} onChangeText={setCategory} />
-                    <TextInput style={modalStyles.input} placeholder="Manufacture Date (YYYY-MM-DD)" value={manufactureDate} onChangeText={setManufactureDate} />
+                    <TextInput style={modalStyles.input} placeholder="Brand (e.g. Petzl)" value={brand} onChangeText={setBrand} placeholderTextColor={modalStyles.inputPlaceholder.color} />
+                    <TextInput style={modalStyles.input} placeholder="Model (e.g. Grigri)" value={model} onChangeText={setModel} placeholderTextColor={modalStyles.inputPlaceholder.color} />
+                    <TextInput style={modalStyles.input} placeholder="Category (e.g. Belay Device)" value={category} onChangeText={setCategory} placeholderTextColor={modalStyles.inputPlaceholder.color} />
+                    <TextInput style={modalStyles.input} placeholder="Manufacture Date (YYYY-MM-DD)" value={manufactureDate} onChangeText={setManufactureDate} placeholderTextColor={modalStyles.inputPlaceholder.color} />
 
                     <TouchableOpacity style={modalStyles.saveBtn} onPress={addGearItem}>
                         <Text style={modalStyles.saveBtnText}>Save to Closet</Text>
