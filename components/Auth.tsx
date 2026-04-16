@@ -36,7 +36,7 @@ export default function Auth() {
     }
 
     return (<View style={styles.container}>
-        <Text style={styles.header}>ClimbTrack</Text>
+        <Text style={styles.header}>RackTrack</Text>
 
         <View style={styles.inputContainer}>
             <TextInput
