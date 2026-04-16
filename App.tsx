@@ -1,6 +1,6 @@
 import { Session } from '@supabase/supabase-js';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Modal, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import Auth from './components/Auth';
 import { homeStyles } from './styles/homeStyles';
 import { modalStyles } from './styles/modalStyles';
@@ -24,6 +24,10 @@ export default function App() {
     const [model, setModel] = useState('');
     const [category, setCategory] = useState('');
     const [manufactureDate, setManufactureDate] = useState('');
+
+    const { width: screenWidth } = useWindowDimensions();
+    const calculateNumColumns = Math.floor(screenWidth / 320); // Each card is around 300px wide + margin
+    const numColumns = Math.min(10, Math.max(1, calculateNumColumns)); // Ensure at least 1 column and max 10
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
@@ -94,7 +98,10 @@ export default function App() {
 
             <FlatList
                 data={gear}
+                key={`grid-${numColumns}`} // Force re-render when numColumns changes
                 keyExtractor={(item) => item.id}
+                numColumns={numColumns}
+                columnWrapperStyle={numColumns > 1 ? homeStyles.row : undefined} // Add spacing between rows if multiple columns
                 renderItem={({ item }) => (
                     <View style={homeStyles.card}>
                         <Text style={homeStyles.brandModel}>{item.brand} {item.model}</Text>
