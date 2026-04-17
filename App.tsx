@@ -92,7 +92,7 @@ export default function App() {
     return (
         <View style={homeStyles.container}>
             <View style={homeStyles.headerRow}>
-                <Text style={homeStyles.header}>{session?.user.username}'s Rack</Text>
+                <Text style={homeStyles.header}>{session?.user.user_metadata.username}'s Rack</Text>
                 <TouchableOpacity onPress={() => supabase.auth.signOut()} style={homeStyles.logoutBtn}>
                     <Text style={homeStyles.logoutText}>Log Out</Text>
                 </TouchableOpacity>

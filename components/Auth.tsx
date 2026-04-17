@@ -1,80 +1,119 @@
-import React, { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { supabase } from "../utils/supabase";
+import React, { useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { supabase } from '../utils/supabase';
 
 export default function Auth() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
 
-    // Handle Login
-    async function signInWithEmail() {
-        setLoading(true);
-        const { error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
-        });
+  async function signInWithEmail() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
 
-        if (error) Alert.alert('Login failed', error.message);
-        setLoading(false);
+    if (error) Alert.alert('Login Failed', error.message);
+    setLoading(false);
+  }
+
+  async function signUpWithEmail() {
+    if (!username) {
+      Alert.alert('Missing Info', 'Please enter a username.');
+      return;
     }
 
-    // Handle Sign Up
-    async function signUpWithEmail() {
-        setLoading(true);
-        const {
-            data: { session },
-            error,
-        } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-        });
+    setLoading(true);
+    const { data: { session }, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          username: username, // This saves the username into Supabase user_metadata
+        }
+      }
+    });
 
-        if (error) Alert.alert('Sign Up failed', error.message);
-        else if (!session) Alert.alert('Check your email', 'A confirmation link has been sent to your email address.');
-        setLoading(false);
-    }
+    if (error) Alert.alert('Registration Failed', error.message);
+    setLoading(false);
+  }
 
-    return (<View style={styles.container}>
-        <Text style={styles.header}>RackTrack</Text>
-
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>ClimbTrack</Text>
+      
+      {/* Only show the Username field if they are creating an account */}
+      {isSignUpMode && (
         <View style={styles.inputContainer}>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-                placeholder="email@address.com"
-                autoCapitalize={'none'}
-            />
+          <TextInput
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+            placeholder="Display Name"
+            placeholderTextColor={styles.inputPlaceholder.color}
+            autoCapitalize="none"
+          />
         </View>
-        <View style={styles.inputContainer}>
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => setPassword(text)}
-                value={password}
-                secureTextEntry={true}
-                placeholder="Password"
-                autoCapitalize={'none'}
-            />
-        </View>
+      )}
 
-        <TouchableOpacity style={styles.button} disabled={loading} onPress={signInWithEmail}>
-            <Text style={styles.buttonText}>Sign in</Text>
-        </TouchableOpacity>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          onChangeText={setEmail}
+          value={email}
+          placeholder="email@address.com"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          placeholderTextColor={styles.inputPlaceholder.color}
+        />
+      </View>
 
-        <TouchableOpacity style={[styles.button, styles.outlineButton]} disabled={loading} onPress={signUpWithEmail}>
-            <Text style={styles.outlineButtonText}>Sign up</Text>
-        </TouchableOpacity>
-    </View>);
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          onChangeText={setPassword}
+          value={password}
+          secureTextEntry={true}
+          placeholder="Password"
+          placeholderTextColor={styles.inputPlaceholder.color}
+          autoCapitalize="none"
+        />
+      </View>
+
+      <TouchableOpacity 
+        style={styles.button} 
+        disabled={loading} 
+        onPress={isSignUpMode ? signUpWithEmail : signInWithEmail}
+      >
+        <Text style={styles.buttonText}>
+          {isSignUpMode ? 'Create Account' : 'Sign In'}
+        </Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={styles.toggleBtn} 
+        disabled={loading} 
+        onPress={() => setIsSignUpMode(!isSignUpMode)}
+      >
+        <Text style={styles.toggleText}>
+          {isSignUpMode ? 'Already have an account? Log in' : "Don't have an account? Sign up"}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f5f5f5' },
-    header: { fontSize: 32, fontWeight: 'bold', textAlign: 'center', marginBottom: 40, color: '#333' },
-    inputContainer: { marginBottom: 15 },
-    input: { backgroundColor: '#fff', padding: 15, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', fontSize: 16 },
-    button: { backgroundColor: '#2563eb', padding: 15, borderRadius: 8, alignItems: 'center', marginBottom: 10 },
-    buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-    outlineButton: { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#2563eb' },
-    outlineButtonText: { color: '#2563eb', fontWeight: 'bold', fontSize: 16 },
+  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f5f5f5' },
+  header: { fontSize: 32, fontWeight: 'bold', textAlign: 'center', marginBottom: 40, color: '#333' },
+  inputContainer: { marginBottom: 15 },
+  input: { backgroundColor: '#fff', padding: 15, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', fontSize: 16 },
+  inputPlaceholder: { color: '#666666' },
+  button: { backgroundColor: '#2563eb', padding: 15, borderRadius: 8, alignItems: 'center', marginBottom: 10 },
+  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  toggleBtn: { padding: 15, alignItems: 'center' },
+  toggleText: { color: '#2563eb', fontSize: 14, fontWeight: '600' },
 });
