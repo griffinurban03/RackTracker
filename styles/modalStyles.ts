@@ -1,10 +1,21 @@
 import { StyleSheet } from 'react-native';
 
 export const modalStyles = StyleSheet.create({
-    container: {
+    overlay: {
         flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    
+    container: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
         padding: 20,
-        marginTop: 40
+        shadowColor: '#000',
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        elevation: 5,
     },
 
     header: {

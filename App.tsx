@@ -1,6 +1,6 @@
 import { Session } from '@supabase/supabase-js';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, Modal, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Alert, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import Auth from './components/Auth';
 import { homeStyles } from './styles/homeStyles';
 import { modalStyles } from './styles/modalStyles';
@@ -25,9 +25,11 @@ export default function App() {
     const [category, setCategory] = useState('');
     const [manufactureDate, setManufactureDate] = useState('');
 
-    const { width: screenWidth } = useWindowDimensions();
+    const { width: screenWidth, height: screenHeight } = useWindowDimensions();
     const calculateNumColumns = Math.floor(screenWidth / 320); // Each card is around 300px wide + margin
     const numColumns = Math.min(10, Math.max(1, calculateNumColumns)); // Ensure at least 1 column and max 10
+    const modalWidth = screenWidth > 900 ? screenWidth / 3 : screenWidth * 0.9;
+    const modalHeight = screenHeight / 2;
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
@@ -90,7 +92,7 @@ export default function App() {
     return (
         <View style={homeStyles.container}>
             <View style={homeStyles.headerRow}>
-                <Text style={homeStyles.header}>My Gear Closet</Text>
+                <Text style={homeStyles.header}>{session?.user.username}'s Rack</Text>
                 <TouchableOpacity onPress={() => supabase.auth.signOut()} style={homeStyles.logoutBtn}>
                     <Text style={homeStyles.logoutText}>Log Out</Text>
                 </TouchableOpacity>
@@ -118,22 +120,26 @@ export default function App() {
             </TouchableOpacity>
 
             {/* The Add Gear Modal Form */}
-            <Modal visible={modalVisible} animationType="slide" presentationStyle="formSheet">
-                <View style={modalStyles.container}>
-                    <Text style={modalStyles.header}>Add New Gear</Text>
+            <Modal visible={modalVisible} animationType="fade" transparent={true}>
+                <View style={modalStyles.overlay}>
+                    <View style={[modalStyles.container, { width: modalWidth, height: modalHeight }]}>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            <Text style={modalStyles.header}>Add New Gear</Text>
 
-                    <TextInput style={modalStyles.input} placeholder="Brand (e.g. Petzl)" value={brand} onChangeText={setBrand} placeholderTextColor={modalStyles.inputPlaceholder.color} />
-                    <TextInput style={modalStyles.input} placeholder="Model (e.g. Grigri)" value={model} onChangeText={setModel} placeholderTextColor={modalStyles.inputPlaceholder.color} />
-                    <TextInput style={modalStyles.input} placeholder="Category (e.g. Belay Device)" value={category} onChangeText={setCategory} placeholderTextColor={modalStyles.inputPlaceholder.color} />
-                    <TextInput style={modalStyles.input} placeholder="Manufacture Date (YYYY-MM-DD)" value={manufactureDate} onChangeText={setManufactureDate} placeholderTextColor={modalStyles.inputPlaceholder.color} />
+                            <TextInput style={modalStyles.input} placeholder="Brand (e.g. Petzl)" value={brand} onChangeText={setBrand} placeholderTextColor={modalStyles.inputPlaceholder.color} />
+                            <TextInput style={modalStyles.input} placeholder="Model (e.g. Grigri)" value={model} onChangeText={setModel} placeholderTextColor={modalStyles.inputPlaceholder.color} />
+                            <TextInput style={modalStyles.input} placeholder="Category (e.g. Belay Device)" value={category} onChangeText={setCategory} placeholderTextColor={modalStyles.inputPlaceholder.color} />
+                            <TextInput style={modalStyles.input} placeholder="Manufacture Date (YYYY-MM-DD)" value={manufactureDate} onChangeText={setManufactureDate} placeholderTextColor={modalStyles.inputPlaceholder.color} />
 
-                    <TouchableOpacity style={modalStyles.saveBtn} onPress={addGearItem}>
-                        <Text style={modalStyles.saveBtnText}>Save to Closet</Text>
-                    </TouchableOpacity>
+                            <TouchableOpacity style={modalStyles.saveBtn} onPress={addGearItem}>
+                                <Text style={modalStyles.saveBtnText}>Save to Rack</Text>
+                            </TouchableOpacity>
 
-                    <TouchableOpacity style={modalStyles.cancelBtn} onPress={() => setModalVisible(false)}>
-                        <Text style={modalStyles.cancelBtnText}>Cancel</Text>
-                    </TouchableOpacity>
+                            <TouchableOpacity style={modalStyles.cancelBtn} onPress={() => setModalVisible(false)}>
+                                <Text style={modalStyles.cancelBtnText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
+                    </View>
                 </View>
             </Modal>
         </View>
